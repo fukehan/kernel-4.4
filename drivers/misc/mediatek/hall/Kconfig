@@ -1,0 +1,22 @@
+
+config CUSTOM_KERNEL_HALL
+	bool "CUSTOM_KERNEL_HALL"
+	help
+	  HALL sensor driverto detect
+
+config VIRTUAL_KEY
+	bool "TYD, virtual key"
+	default y
+
+# AH1883 sensor
+config MTK_AH1883
+	bool "AH1883 for MediaTek package"
+	default n
+
+config MTK_PIR
+	bool "PIR for MediaTek package"
+	default n
+
+config MTK_IR_SWITCH
+	bool "IR_SWITCH for MediaTek package"
+	default n
