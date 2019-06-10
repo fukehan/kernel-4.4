@@ -681,6 +681,15 @@ bool SetDl3ToAwb(unsigned int ConnectionState)
 	return true;
 }
 
+bool SetDl1ToI2s5(unsigned int ConnectionState)
+{
+	SetConnectionState(ConnectionState, Soc_Aud_InterConnectionInput_I05,
+			Soc_Aud_InterConnectionOutput_O30);
+	SetConnectionState(ConnectionState, Soc_Aud_InterConnectionInput_I06,
+			Soc_Aud_InterConnectionOutput_O31);
+	return true;
+}
+
 bool SetI2s0ToGeneralSrc1(unsigned int ConnectionState)
 {
 	SetConnectionState(ConnectionState, Soc_Aud_InterConnectionInput_I00,
@@ -807,6 +816,7 @@ static const struct connection_link_t mConnectionLink[] = {
 	{Soc_Aud_AFE_IO_Block_MEM_DL3, Soc_Aud_AFE_IO_Block_I2S3, SetDl3ToI2s3},
 	{Soc_Aud_AFE_IO_Block_MEM_DL3, Soc_Aud_AFE_IO_Block_I2S1_DAC_2, SetDl3ToI2s1Dac2},
 	{Soc_Aud_AFE_IO_Block_MEM_DL3, Soc_Aud_AFE_IO_Block_MEM_AWB, SetDl3ToAwb},
+	{Soc_Aud_AFE_IO_Block_MEM_DL1, Soc_Aud_AFE_IO_Block_I2S5, SetDl1ToI2s5},
 	{Soc_Aud_AFE_IO_Block_I2S0, Soc_Aud_AFE_IO_Block_GENERAL_SRC_1_OUT, SetI2s0ToGeneralSrc1},
 	{Soc_Aud_AFE_IO_Block_MEM_DL1, Soc_Aud_AFE_IO_Block_GENERAL_SRC_1_OUT, SetIDl1ToGeneralSrc1},
 	{Soc_Aud_AFE_IO_Block_MEM_DL2, Soc_Aud_AFE_IO_Block_GENERAL_SRC_1_OUT, SetIDl2ToGeneralSrc1},
@@ -987,6 +997,12 @@ bool SetIntfConnectionFormat(unsigned int ConnectionFormat, unsigned int Aud_blo
 					  Soc_Aud_InterConnectionOutput_O36);
 		SetoutputConnectionFormat(ConnectionFormat,
 					  Soc_Aud_InterConnectionOutput_O37);
+		break;
+	case Soc_Aud_AFE_IO_Block_I2S5:
+		SetoutputConnectionFormat(ConnectionFormat,
+					  Soc_Aud_InterConnectionOutput_O30);
+		SetoutputConnectionFormat(ConnectionFormat,
+					  Soc_Aud_InterConnectionOutput_O31);
 		break;
 	default:
 		pr_warn("no this Aud_block = %d\n", Aud_block);

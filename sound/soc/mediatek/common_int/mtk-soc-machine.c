@@ -348,6 +348,15 @@ static struct snd_soc_dai_link mt_soc_dai_common[] = {
 		.codec_name = MT_SOC_CODEC_NAME,
 	},
 	{
+		.name = "I2S5DL1OUTPUT",
+		.stream_name = MT_SOC_I2S5_DL1_STREAM_NAME,
+		.cpu_dai_name	= MT_SOC_I2S5DL1_NAME,
+		.platform_name	= MT_SOC_I2S5_DL_PCM,
+		.codec_dai_name = "snd-soc-dummy-dai",
+		.codec_name = "snd-soc-dummy",
+	},
+
+	{
 		.name = "MultiMedia2",
 		.stream_name = MT_SOC_UL1_STREAM_NAME,
 		.cpu_dai_name   = MT_SOC_UL1DAI_NAME,

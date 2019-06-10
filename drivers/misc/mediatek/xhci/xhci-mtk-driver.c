@@ -579,12 +579,15 @@ bool mtk_is_host_mode(void)
 #ifdef CONFIG_USBIF_COMPLIANCE
 
 #else
+#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen for power on host mode enbale 8152
+int xhci_init_flag = 0;
+#endif
 static int __init xhci_hcd_init(void)
 {
 	mtk_xhci_wakelock_init();
 	mtk_xhci_switch_init();
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen for power on host mode enbale 8152
-	mtk_xhci_driver_load(1);
+	xhci_init_flag = 1;
 #endif
 
 #ifndef CONFIG_USB_VBUS_GPIO

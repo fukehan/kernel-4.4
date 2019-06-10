@@ -138,6 +138,7 @@ enum soc_aud_afe_io_block {
 	Soc_Aud_AFE_IO_Block_I2S2_2,
 	Soc_Aud_AFE_IO_Block_I2S3,
 	Soc_Aud_AFE_IO_Block_I2S_CONNSYS,
+	Soc_Aud_AFE_IO_Block_I2S5,
 	/* HW gain contorl */
 	Soc_Aud_AFE_IO_Block_HW_GAIN1_OUT,
 	Soc_Aud_AFE_IO_Block_HW_GAIN1_IN,

@@ -1302,6 +1302,30 @@ bool SetI2SDacOut(unsigned int SampleRate, bool lowjitter, bool I2SWLen)
 	return true;
 }
 
+bool SetI2S5Out(unsigned int SampleRate, bool lowjitter, bool I2SWLen)
+{
+	unsigned int Audio_I2S5 = 0;
+
+	pr_aud("SetI2S5Out SampleRate %d, lowjitter %d, I2SWLen %d\n", SampleRate, lowjitter,
+		I2SWLen);
+
+	Audio_I2S5 |= (Soc_Aud_LR_SWAP_NO_SWAP << 31);
+	Audio_I2S5 |= (lowjitter << 12);			/* low gitter mode */
+	Audio_I2S5 |= (SampleRateTransform(SampleRate, Soc_Aud_Digital_Block_I2S_OUT_DAC) << 8);
+	Audio_I2S5 |= (Soc_Aud_INV_LRCK_NO_INVERSE << 5);
+	Audio_I2S5 |= (Soc_Aud_I2S_FORMAT_I2S << 3);
+	Audio_I2S5 |= (I2SWLen << 1);
+	Afe_Set_Reg(AFE_I2S_CON4, Audio_I2S5, MASK_ALL);
+
+	return true;
+}
+
+bool SetI2S5Enable(bool bEnable)
+{
+	Afe_Set_Reg(AFE_I2S_CON4, bEnable, 0x1);
+	return true;
+}
+
 
 bool SetHwDigitalGainMode(enum soc_aud_digital_block AudBlock, unsigned int SampleRate, unsigned int SamplePerStep)
 {

@@ -3861,6 +3861,10 @@ firmware_class.path=/vendor/firmware loop.max_part=7";
 		compatible = "mediatek,mt_soc_pcm_dl1_i2s0dl1";
 	};
 
+	mtk-soc-dl1-i2s5_pcm  {
+		compatible = "mediatek,mt_soc_pcm_i2s5_dl";
+	};
+	
 	mt_soc_dl1_awb_pcm {
 		compatible = "mediatek,mt_soc_pcm_dl1_awb";
 	};

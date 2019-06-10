@@ -119,6 +119,8 @@ bool Set2ndI2SAdcEnable(bool bEnable);
 bool SetI2SDacOut(unsigned int SampleRate, bool Lowgitter, bool I2SWLen);
 bool Set2ndI2SEnable(bool bEnable);
 bool set_i2s_dac_out_source(unsigned int aud_block);
+bool SetI2S5Out(unsigned int SampleRate, bool Lowgitter, bool I2SWLen);
+bool SetI2S5Enable(bool bEnable);
 
 int get_dai_rate(enum soc_aud_digital_block digitalBlock);
 

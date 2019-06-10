@@ -222,10 +222,23 @@ void mt_usb_disconnect(void)
 	os_printk(K_INFO, "%s\n", __func__);
 	issue_connection_work(CONNECTION_OPS_DISC);
 }
+#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)
+extern int mtk_xhci_driver_load(bool vbus_on);
+extern int xhci_init_flag;
+static int cable_in = 0;
+int is_xhci_load=0;
+#endif
 void mt_usb_reconnect(void)
 {
 	os_printk(K_INFO, "%s\n", __func__);
 	issue_connection_work(CONNECTION_OPS_CHECK);
+#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)
+	if((xhci_init_flag==1)&&(cable_in == 0))//add cable_in for can't enter meta mode
+	{
+		is_xhci_load = 1;
+		mtk_xhci_driver_load(true);//wuxiwen add
+	}
+#endif
 }
 
 static void power_down_work(struct work_struct *data)
@@ -410,7 +423,7 @@ bool usb_cable_connected(void)
 {
 	return __usb_cable_connected(CONNECTION_OPS_CHECK);
 }
-#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for switch gpio 1
+#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)
 extern unsigned int usb_switch_pin;
 #endif
 
@@ -440,6 +453,10 @@ static bool __usb_cable_connected(int ops)
 		vbus_exist = mu3d_hal_is_vbus_exist();
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for switch gpio 1
 		gpio_set_value(usb_switch_pin, vbus_exist==0);
+		if(vbus_exist==1)
+			cable_in = 1;
+		else
+			cable_in = 0;
 #endif
 		os_printk(K_INFO, "%s vbus_exist=%d type=%d ops=%d\n",
 				__func__, vbus_exist, chg_type, ops);

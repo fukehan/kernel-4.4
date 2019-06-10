@@ -2031,8 +2031,10 @@ static void musb_restore_context(struct musb *musb)
 #endif
 }
 
-
-
+#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)
+extern int is_xhci_load;
+extern void mtk_xhci_driver_unload(bool vbus_off);
+#endif
 static void musb_suspend_work(struct work_struct *data)
 {
 	struct musb *musb = container_of(data, struct musb, suspend_work);
@@ -2044,6 +2046,13 @@ static void musb_suspend_work(struct work_struct *data)
 	    && !usb_cable_connected()) {
 		musb_power_down(musb);
 	}
+#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for reconnect for hub
+	if(is_xhci_load==1)
+	{
+		mtk_xhci_driver_unload(true);
+		mt_usb_reconnect();
+	}
+#endif
 }
 
 /* Only used to provide driver mode change events */
