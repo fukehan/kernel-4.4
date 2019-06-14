@@ -3803,11 +3803,10 @@ firmware_class.path=/vendor/firmware loop.max_part=7";
 			compatible = "usb-nop-xceiv";
 	};
 
-	usb3_phy {
+	usb3_phy:usb3_phy {
 		 compatible = "mediatek,usb3_phy";
 		 clocks = <&infracfg_ao INFRACFG_AO_USB_CG>, <&infracfg_ao INFRACFG_AO_UNIPRO_SCK_CG>;
 		 clock-names = "ssusb_clk", "sys_ck";
-		 usb_switch = <&pio 158 0>;
 	};
 
 	mt_soc_btcvsd_rx_pcm {

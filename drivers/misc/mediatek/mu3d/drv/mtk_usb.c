@@ -32,6 +32,9 @@
 #ifdef CONFIG_PHY_MTK_SSUSB
 #include "mtk-ssusb-hal.h"
 #endif
+#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)
+extern unsigned int usb_switch_pin;
+#endif
 
 unsigned int cable_mode = CABLE_MODE_NORMAL;
 #ifdef CONFIG_MTK_UART_USB_SWITCH
@@ -130,7 +133,10 @@ void connection_work(struct work_struct *data)
 			vcore_op(1);
 #endif
 			musb_start(musb);
-
+#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for switch gpio 0
+			msleep(50);
+			gpio_set_value(usb_switch_pin, 0);
+#endif
 			os_printk(K_INFO, "%s ----Connect----\n", __func__);
 		} else if ((is_usb_cable == false) && (connection_work_dev_status != OFF)) {
 
@@ -423,9 +429,6 @@ bool usb_cable_connected(void)
 {
 	return __usb_cable_connected(CONNECTION_OPS_CHECK);
 }
-#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)
-extern unsigned int usb_switch_pin;
-#endif
 
 static bool __usb_cable_connected(int ops)
 {
@@ -452,7 +455,7 @@ static bool __usb_cable_connected(int ops)
 		/* VBUS CHECK to avoid type miss-judge */
 		vbus_exist = mu3d_hal_is_vbus_exist();
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for switch gpio 1
-		gpio_set_value(usb_switch_pin, vbus_exist==0);
+		//gpio_set_value(usb_switch_pin, vbus_exist==0);
 		if(vbus_exist==1)
 			cable_in = 1;
 		else

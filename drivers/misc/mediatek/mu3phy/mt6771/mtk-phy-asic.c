@@ -1342,7 +1342,7 @@ static int mt_usb_dts_probe(struct platform_device *pdev)
 			if (gpio_is_valid(usb_switch_pin)) {
 				if (!gpio_request(usb_switch_pin, "usb_switch")) {
 					gpio_direction_output(usb_switch_pin, 1);
-					gpio_set_value(usb_switch_pin, 0);
+					gpio_set_value(usb_switch_pin, 1);
 					printk("[droi] usb_switch_pin ok!\n");
 				}
 			}

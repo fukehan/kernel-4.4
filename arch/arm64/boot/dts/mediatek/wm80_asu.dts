@@ -900,6 +900,10 @@
 	chg2_ta_ac_charger_current = <2000000>;
 };
 
+&usb3_phy {
+	 usb_switch = <&pio 158 0>;
+};
+
 &i2c1 {
 	msensor@0c {
 		i2c_num = <1>;
