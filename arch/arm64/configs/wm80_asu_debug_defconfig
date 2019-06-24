@@ -444,7 +444,7 @@ CONFIG_INPUT_TOUCHSCREEN=y
 
 ##################cam##################
 CONFIG_MTK_IMGSENSOR=y
-CONFIG_CUSTOM_KERNEL_IMGSENSOR=""
+CONFIG_CUSTOM_KERNEL_IMGSENSOR="jxv01_mipi_raw s5k3m2_mipi_raw"
 
 ##################lens#################
 #CONFIG_MTK_LENS=y

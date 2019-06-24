@@ -2039,6 +2039,7 @@ static void musb_restore_context(struct musb *musb)
 extern int is_xhci_load;
 extern void mtk_xhci_driver_unload(bool vbus_off);
 extern unsigned int usb_switch_pin;
+extern int first_boot_with_usb;
 #endif
 static void musb_suspend_work(struct work_struct *data)
 {
@@ -2055,6 +2056,11 @@ static void musb_suspend_work(struct work_struct *data)
 	if(is_xhci_load==1)
 	{
 		mtk_xhci_driver_unload(true);
+	}
+	if((is_xhci_load==1) || (first_boot_with_usb ==1))
+	{
+		//printk("==wuxiwen== reconect hub!!!\n");
+		first_boot_with_usb = 0;
 		msleep(100);
 		mt_usb_reconnect();
 		msleep(50);

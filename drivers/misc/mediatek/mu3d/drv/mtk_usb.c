@@ -233,6 +233,7 @@ extern int mtk_xhci_driver_load(bool vbus_on);
 extern int xhci_init_flag;
 static int cable_in = 0;
 int is_xhci_load=0;
+int first_boot_with_usb = 0;
 #endif
 void mt_usb_reconnect(void)
 {
@@ -243,6 +244,12 @@ void mt_usb_reconnect(void)
 	{
 		is_xhci_load = 1;
 		mtk_xhci_driver_load(true);//wuxiwen add
+	}
+	else
+	{
+		//printk("==wuxiwen==%s cable_in=%d\n",__func__,cable_in);
+		if(cable_in == 1)
+			first_boot_with_usb = 1;
 	}
 #endif
 }

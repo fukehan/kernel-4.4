@@ -35,6 +35,8 @@
 
 #define IMGSENSOR_LEGACY_COMPAT
 
+#define MIPI_SWITCH
+
 #define IMGSENSOR_TOSTRING(value)           #value
 #define IMGSENSOR_STRINGIZE(stringizedName) IMGSENSOR_TOSTRING(stringizedName)
 

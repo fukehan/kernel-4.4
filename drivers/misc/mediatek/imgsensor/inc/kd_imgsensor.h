@@ -190,6 +190,8 @@
 #define OV2650_SENSOR_ID_2                      0x2652
 #define OV2650_SENSOR_ID_3                      0x2655
 #define OV20880MIPI_SENSOR_ID                   0x20880
+#define JXV01MIPI_SENSOR_ID                     0x0e04
+
 /*S5K*/
 #define S5K2XASP_SENSOR_ID                      0x218A
 #define S5K3P8SP_SENSOR_ID                      0x3108
@@ -492,6 +494,8 @@
 #define SENSOR_DRVNAME_IMX135_MIPI_RAW_8MP      "imx135_mipi_raw_8mp"
 #define SENSOR_DRVNAME_OV13870_MIPI_RAW_5MP     "ov13870_mipi_raw_5mp"
 #define SENSOR_DRVNAME_OV8856_MIPI_RAW_5MP      "ov8856_mipi_raw_5mp"
+
+#define SENSOR_DRVNAME_JXV01_MIPI_RAW          "jxv01mipi"
 
 /*******************************************************************************
 *
