@@ -291,6 +291,11 @@ static int mt6370_pmu_probe(struct i2c_client *i2c,
 	if (ret < 0)
 		goto out_subdevs;
 	pm_runtime_enable(&i2c->dev);
+
+#if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//add for long press do not reboot
+	ret = mt6370_pmu_reg_update_bits(chip, 0x2A, 0x80, 0x80);
+#endif
+
 	dev_info(&i2c->dev, "%s successfully\n", __func__);
 	return 0;
 out_subdevs:
