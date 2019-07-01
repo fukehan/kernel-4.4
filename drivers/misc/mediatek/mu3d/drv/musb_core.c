@@ -2063,8 +2063,8 @@ static void musb_suspend_work(struct work_struct *data)
 		first_boot_with_usb = 0;
 		msleep(100);
 		mt_usb_reconnect();
-		msleep(50);
-		gpio_set_value(usb_switch_pin, 1);
+		//msleep(50);
+		//gpio_set_value(usb_switch_pin, 1);
 	}
 #endif
 }

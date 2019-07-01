@@ -244,6 +244,8 @@ void mt_usb_reconnect(void)
 	{
 		is_xhci_load = 1;
 		mtk_xhci_driver_load(true);//wuxiwen add
+		msleep(50);
+		gpio_set_value(usb_switch_pin, 1);
 	}
 	else
 	{
