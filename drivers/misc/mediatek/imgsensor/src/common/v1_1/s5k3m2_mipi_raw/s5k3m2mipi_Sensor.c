@@ -74,6 +74,7 @@ static imgsensor_info_struct imgsensor_info = {
 		/*       following for MIPIDataLowPwr2HighSpeedSettleDelayCount by different scenario   */
 		.mipi_data_lp2hs_settle_dc = 85,	/* unit , ns */
 		/*       following for GetDefaultFramerateByScenario()  */
+		.mipi_pixel_rate = 748800000,
 		.max_framerate = 300,
 	},
 	.cap = {
@@ -85,6 +86,7 @@ static imgsensor_info_struct imgsensor_info = {
 		.grabwindow_width = 4192,	/* 5334, */
 		.grabwindow_height = 3104,
 		.mipi_data_lp2hs_settle_dc = 85,	/* unit , ns */
+		.mipi_pixel_rate = 748800000,
 		.max_framerate = 300,
 	},
 	.cap1 = {
@@ -107,6 +109,7 @@ static imgsensor_info_struct imgsensor_info = {
 		.grabwindow_width = 4192,	/* 5334, */
 		.grabwindow_height = 3104,
 		.mipi_data_lp2hs_settle_dc = 85,	/* unit , ns */
+		.mipi_pixel_rate = 748800000,
 		.max_framerate = 300,
 	},
 	.hs_video = {
@@ -118,6 +121,7 @@ static imgsensor_info_struct imgsensor_info = {
 		.grabwindow_width = 688,	/* 1920, */
 		.grabwindow_height = 512,	/* 1080, */
 		.mipi_data_lp2hs_settle_dc = 85,	/* unit , ns */
+		.mipi_pixel_rate = 748800000,
 		.max_framerate = 1200,
 	},
 	.slim_video = {
@@ -129,6 +133,7 @@ static imgsensor_info_struct imgsensor_info = {
 		.grabwindow_width = 1280,	/* 1280, */
 		.grabwindow_height = 720,	/* 720, */
 		.mipi_data_lp2hs_settle_dc = 85,	/* unit , ns */
+		.mipi_pixel_rate = 748800000,
 		.max_framerate = 300,
 	},
 	.custom1 = {
@@ -143,6 +148,7 @@ static imgsensor_info_struct imgsensor_info = {
 		/*       following for MIPIDataLowPwr2HighSpeedSettleDelayCount by different scenario   */
 		.mipi_data_lp2hs_settle_dc = 85,	/* unit , ns */
 		/*       following for GetDefaultFramerateByScenario()  */
+		.mipi_pixel_rate = 748800000,
 		.max_framerate = 300,
 	},
 	.custom2 = {
@@ -157,6 +163,7 @@ static imgsensor_info_struct imgsensor_info = {
 		/*       following for MIPIDataLowPwr2HighSpeedSettleDelayCount by different scenario   */
 		.mipi_data_lp2hs_settle_dc = 85,	/* unit , ns */
 		/*       following for GetDefaultFramerateByScenario()  */
+		.mipi_pixel_rate = 748800000,
 		.max_framerate = 300,
 	},
 	.custom3 = {
@@ -171,6 +178,7 @@ static imgsensor_info_struct imgsensor_info = {
 		/*       following for MIPIDataLowPwr2HighSpeedSettleDelayCount by different scenario   */
 		.mipi_data_lp2hs_settle_dc = 85,	/* unit , ns */
 		/*       following for GetDefaultFramerateByScenario()  */
+		.mipi_pixel_rate = 748800000,
 		.max_framerate = 300,
 	},
 	.custom4 = {
@@ -185,6 +193,7 @@ static imgsensor_info_struct imgsensor_info = {
 		/*       following for MIPIDataLowPwr2HighSpeedSettleDelayCount by different scenario   */
 		.mipi_data_lp2hs_settle_dc = 85,	/* unit , ns */
 		/*       following for GetDefaultFramerateByScenario()  */
+		.mipi_pixel_rate = 748800000,
 		.max_framerate = 300,
 	},
 	.custom5 = {
@@ -199,6 +208,7 @@ static imgsensor_info_struct imgsensor_info = {
 		/*       following for MIPIDataLowPwr2HighSpeedSettleDelayCount by different scenario   */
 		.mipi_data_lp2hs_settle_dc = 85,	/* unit , ns */
 		/*       following for GetDefaultFramerateByScenario()  */
+		.mipi_pixel_rate = 748800000,
 		.max_framerate = 300,
 	},
 	.margin = 4,
@@ -3718,6 +3728,17 @@ static kal_uint32 set_test_pattern_mode(kal_bool enable)
 	return ERROR_NONE;
 }
 
+static kal_uint32 streaming_control(kal_bool enable)
+{
+	printk("==wuxiwen== streaming_enable(0=Sw Standby,1=streaming): %d\n", enable);
+	if (enable)
+		write_cmos_sensor(0x0100, 0x01);
+	else
+		write_cmos_sensor(0x0100, 0x00);
+	return ERROR_NONE;
+}
+
+
 static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 				  UINT8 *feature_para, UINT32 *feature_para_len)
 {
@@ -3813,8 +3834,8 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 		/* LOG_INF("ihdr enable :%d\n", (BOOL)*feature_data_16); */
 		LOG_INF("Warning! Not Support IHDR Feature");
 		spin_lock(&imgsensor_drv_lock);
-		/* imgsensor.ihdr_en = (BOOL)*feature_data_16; */
-		imgsensor.ihdr_en = KAL_FALSE;
+		imgsensor.ihdr_en = (BOOL)*feature_data_32;
+		/*imgsensor.ihdr_en = KAL_FALSE;*/
 		spin_unlock(&imgsensor_drv_lock);
 		break;
 	case SENSOR_FEATURE_GET_CROP_INFO:
@@ -3889,6 +3910,40 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 
 	case SENSOR_FEATURE_SET_IHDR_SHUTTER_GAIN:
 		LOG_INF("SENSOR_SET_SENSOR_IHDR is no support");
+		break;
+	case SENSOR_FEATURE_GET_MIPI_PIXEL_RATE:
+		{
+			kal_uint32 rate;
+
+			switch (*feature_data) {
+			case MSDK_SCENARIO_ID_CAMERA_CAPTURE_JPEG:
+				rate = imgsensor_info.cap.mipi_pixel_rate;
+				break;
+			case MSDK_SCENARIO_ID_VIDEO_PREVIEW:
+				rate = imgsensor_info.normal_video.mipi_pixel_rate;
+				break;
+			case MSDK_SCENARIO_ID_HIGH_SPEED_VIDEO:
+				rate = imgsensor_info.hs_video.mipi_pixel_rate;
+				break;
+			case MSDK_SCENARIO_ID_SLIM_VIDEO:
+				rate = imgsensor_info.slim_video.mipi_pixel_rate;
+				break;
+			case MSDK_SCENARIO_ID_CAMERA_PREVIEW:
+			default:
+				rate = imgsensor_info.pre.mipi_pixel_rate;
+				break;
+			}
+			*(MUINT32 *) (uintptr_t) (*(feature_data + 1)) = rate;
+		}
+		break;
+			/******************** PDAF END	 <<< *********/
+	case SENSOR_FEATURE_SET_STREAMING_SUSPEND:
+		printk("==wuxiwen== SENSOR_FEATURE_SET_STREAMING_SUSPEND\n");
+		streaming_control(KAL_FALSE);
+		break;
+	case SENSOR_FEATURE_SET_STREAMING_RESUME:
+		printk("==wuxiwen== SENSOR_FEATURE_SET_STREAMING_RESUME\n");
+		streaming_control(KAL_TRUE);
 		break;
 	default:
 		break;
