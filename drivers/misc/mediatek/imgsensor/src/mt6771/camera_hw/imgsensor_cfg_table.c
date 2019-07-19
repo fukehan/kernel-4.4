@@ -340,13 +340,29 @@ struct IMGSENSOR_HW_POWER_SEQ sensor_power_sequence[] = {
 		SENSOR_DRVNAME_JXV01_MIPI_RAW,
 		{
 			{SensorMCLK, Vol_High, 10},
-			{PDN, Vol_Low, 10},
+			{PDN, Vol_High, 10},
 			{RST, Vol_Low, 10},
 			{DOVDD, Vol_1800, 20},
 			{AVDD, Vol_2800, 14},
 			{DVDD, Vol_1200, 0},
-			//{AFVDD, Vol_2800, 15},
+			{AFVDD, Vol_2800, 15},
+			{PDN, Vol_Low, 10},
+			{RST, Vol_High, 2}
+		},
+	},
+#endif
+#if defined(OV5648_MIPI_RAW)
+	{
+		SENSOR_DRVNAME_OV5648_MIPI_RAW,
+		{
+			{SensorMCLK, Vol_High, 10},
 			{PDN, Vol_High, 10},
+			{RST, Vol_Low, 10},
+			{DOVDD, Vol_1800, 20},
+			{AVDD, Vol_2800, 14},
+			{DVDD, Vol_1200, 0},
+			{AFVDD, Vol_2800, 15},
+			{PDN, Vol_Low, 10},
 			{RST, Vol_High, 2}
 		},
 	},
