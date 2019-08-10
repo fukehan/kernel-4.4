@@ -34,7 +34,7 @@ struct IMGSENSOR_HW_CFG imgsensor_custom_config[] = {
 			{IMGSENSOR_HW_PIN_MCLK,  IMGSENSOR_HW_ID_MCLK},
 			{IMGSENSOR_HW_PIN_AVDD,  IMGSENSOR_HW_ID_REGULATOR},
 			{IMGSENSOR_HW_PIN_DOVDD, IMGSENSOR_HW_ID_REGULATOR},
-			{IMGSENSOR_HW_PIN_DVDD,  IMGSENSOR_HW_ID_GPIO},
+			{IMGSENSOR_HW_PIN_DVDD,  IMGSENSOR_HW_ID_REGULATOR},
 			{IMGSENSOR_HW_PIN_PDN,   IMGSENSOR_HW_ID_GPIO},
 			{IMGSENSOR_HW_PIN_RST,   IMGSENSOR_HW_ID_GPIO},
 			{IMGSENSOR_HW_PIN_NONE,  IMGSENSOR_HW_ID_NONE},
@@ -207,6 +207,23 @@ struct IMGSENSOR_HW_POWER_SEQ sensor_power_sequence[] = {
 		},
 	},
 #endif
+#if defined(OV13855_MIPI_RAW)
+	{
+		SENSOR_DRVNAME_OV13855_MIPI_RAW,
+		{
+			{SensorMCLK, Vol_High, 0},
+			{DOVDD, Vol_1800, 5},
+			{AVDD, Vol_2800, 5},
+			{DVDD, Vol_1200, 5},
+			//{AFVDD, Vol_2800, 5},
+			{PDN, Vol_Low, 10},
+			{RST, Vol_Low, 10},
+			{PDN, Vol_High, 10},
+			{RST, Vol_High, 15},
+		},
+	},
+#endif
+
 #if defined(IMX386_MIPI_RAW)
 	{
 		SENSOR_DRVNAME_IMX386_MIPI_RAW,

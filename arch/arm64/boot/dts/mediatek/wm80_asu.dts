@@ -544,18 +544,18 @@
 		};
 	};
 	camera_pins_cam0_vcamd_0: cam0@vcam0 {
-		/*pins_cmd_dat {
-			pins = <PINMUX_GPIO91__FUNC_GPIO91>;
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO72__FUNC_GPIO72>;
 			slew-rate = <1>;
 			output-low;
-		};*/
+		};
 	};
 	camera_pins_cam0_vcamd_1: cam0@vcam1 {
-		/*pins_cmd_dat {
-			pins = <PINMUX_GPIO91__FUNC_GPIO91>;
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO72__FUNC_GPIO72>;
 			slew-rate = <1>;
 			output-high;
-		};*/
+		};
 	};
 	camera_pins_cam2_vcamd_0: cam2@vcam0 {
 		pins_cmd_dat {
