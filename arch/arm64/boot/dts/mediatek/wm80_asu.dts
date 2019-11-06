@@ -3,7 +3,7 @@
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/pinctrl/mt6771-pinfunc.h>
-
+#include <dt-bindings/clock/mt6771-clk.h>
 / {
 	panel: panel@0 {
 		compatible = "es,es6311_anx6585_zigzag_wxga";
@@ -1010,6 +1010,71 @@
 		en_st; /* safety timer */
 		/* en_te; */
 		en_wdt;
+	};
+};
+
+&pio {
+    sc16is752_default: sc16is752@0 {
+	};
+	sc16is752_power_pin_low: sc16is752_power0 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO40__FUNC_GPIO40>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	sc16is752_power_pin_high: sc16is752_power1 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO40__FUNC_GPIO40>;
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+	sc16is752_rst_pin_low: sc16is752_rst0{
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO39__FUNC_GPIO39>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	sc16is752_rst_pin_high: sc16is752_rst1{
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO39__FUNC_GPIO39>;
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+	sc16is752_pin_irq: sc16is752_irq0{
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO35__FUNC_GPIO35>;
+			slew-rate = <0>;
+			bias-disable;
+		};
+	};
+};
+
+&spi0{
+
+	sc16is7xx@1{
+		compatible = "nxp,sc16is752";
+		reg = <0x0>;
+        spi-max-frequency = <0x4000000>;
+	    	
+	    clocks = <&clk26m>;
+		interrupt-parent = <&pio>;
+		interrupts = <35 IRQ_TYPE_EDGE_FALLING 35 0>;
+		gpio-controller;
+		#gpio-cells = <2>;
+	
+	    pinctrl-names = "sc16is752_dft","sc16is752_power_low","sc16is752_power_high","sc16is752_rst_low","sc16is752_rst_high", "sc16is752_irq";
+		pinctrl-0 = <&sc16is752_default>;
+		pinctrl-1 = <&sc16is752_power_pin_low>;
+		pinctrl-2 = <&sc16is752_power_pin_high>;
+		pinctrl-3 = <&sc16is752_rst_pin_low>;
+		pinctrl-4 = <&sc16is752_rst_pin_high>;
+		pinctrl-5 = <&sc16is752_pin_irq>;
+		
+		status = "okay";
 	};
 };
 

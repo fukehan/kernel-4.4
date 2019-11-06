@@ -4210,7 +4210,11 @@ firmware_class.path=/vendor/firmware loop.max_part=7";
 
 	gyro: gyro {
 	};
-
+	
+    sc16is752: sc16is752{
+        compatible = "mediatek,sc16is752_irq";
+    };
+    
 	mse: mse {
 	};
 

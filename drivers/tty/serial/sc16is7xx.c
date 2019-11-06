@@ -491,6 +491,8 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
 	u8 prescaler = 0;
 	unsigned long clk = port->uartclk, div = clk / 16 / baud;
 
+    //printk("sc16is7xx_set_baud clk = %ld,baud =%d \n",clk,baud);
+
 	if (div > 0xffff) {
 		prescaler = SC16IS7XX_MCR_CLKSEL_BIT;
 		div /= 4;
@@ -498,6 +500,7 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
 
 	lcr = sc16is7xx_port_read(port, SC16IS7XX_LCR_REG);
 
+    //printk("sc16is7xx_set_baud lcr =%d \n",lcr);
 	/* Open the LCR divisors for configuration */
 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG,
 			     SC16IS7XX_LCR_CONF_MODE_B);
@@ -1161,7 +1164,7 @@ static int sc16is7xx_probe(struct device *dev,
 		clk_prepare_enable(s->clk);
 		freq = clk_get_rate(s->clk);
 	}
-
+    freq = 1843200;
 	s->regmap = regmap;
 	s->devtype = devtype;
 	dev_set_drvdata(dev, s);
@@ -1174,6 +1177,7 @@ static int sc16is7xx_probe(struct device *dev,
 		ret = PTR_ERR(s->kworker_task);
 		goto out_clk;
 	}
+	printk("sc16is7xx ret1 = %d freq =%ld \n",ret,freq);
 	sched_setscheduler(s->kworker_task, SCHED_FIFO, &sched_param);
 
 #ifdef CONFIG_GPIOLIB
@@ -1300,6 +1304,67 @@ static struct regmap_config regcfg = {
 	.precious_reg = sc16is7xx_regmap_precious,
 };
 
+struct pinctrl *sc16is752_pinctrl;
+struct pinctrl_state *sc16is752_dft;
+struct pinctrl_state *sc16is752_power_low;
+struct pinctrl_state *sc16is752_power_high;
+struct pinctrl_state *sc16is752_rst_low;
+struct pinctrl_state *sc16is752_rst_high;
+struct pinctrl_state *sc16is752_irq_pin;
+
+int sc16is752_gpio_init(struct spi_device *spi){
+    int ret = 0;
+    sc16is752_pinctrl = devm_pinctrl_get(&spi->dev);
+    if (IS_ERR(sc16is752_pinctrl)) {
+        ret = PTR_ERR(sc16is752_pinctrl);
+        printk("sc16is752_pinctrl cannot find pinctrl\n");
+        return ret;
+    }
+    sc16is752_dft = pinctrl_lookup_state(sc16is752_pinctrl, "sc16is752_dft");
+    if (IS_ERR(sc16is752_dft)) {
+        ret = PTR_ERR(sc16is752_dft);
+        printk("sc16is752_dft cannot find pinctrl\n");
+        //return ret;
+    }
+    sc16is752_power_low = pinctrl_lookup_state(sc16is752_pinctrl, "sc16is752_power_low");
+    if (IS_ERR(sc16is752_power_low)) {
+        ret = PTR_ERR(sc16is752_power_low);
+        printk("sc16is752_power_low cannot find pinctrl\n");
+        return ret;
+    }
+   sc16is752_power_high = pinctrl_lookup_state(sc16is752_pinctrl, "sc16is752_power_high");
+    if (IS_ERR(sc16is752_power_high)) {
+        ret = PTR_ERR(sc16is752_power_high);
+        printk("sc16is752_power_high cannot find pinctrl\n");
+        return ret;
+    }
+    sc16is752_rst_low = pinctrl_lookup_state(sc16is752_pinctrl, "sc16is752_rst_low");
+    if (IS_ERR(sc16is752_rst_low)) {
+        ret = PTR_ERR(sc16is752_rst_low);
+        printk("sc16is752_rst_low cannot find pinctrl\n");
+        return ret;
+    }
+    sc16is752_rst_high = pinctrl_lookup_state(sc16is752_pinctrl, "sc16is752_rst_high");
+    if (IS_ERR(sc16is752_rst_high)) {
+        ret = PTR_ERR(sc16is752_rst_high);
+        printk("sc16is752_rst_high cannot find pinctrl\n");
+        return ret;
+    }
+    sc16is752_irq_pin = pinctrl_lookup_state(sc16is752_pinctrl, "sc16is752_irq");
+    if (IS_ERR(sc16is752_irq_pin)) {
+        ret = PTR_ERR(sc16is752_irq_pin);
+        printk("sc16is752_irq_pin cannot find pinctrl\n");
+        return ret;
+    }
+    //default power on
+    pinctrl_select_state(sc16is752_pinctrl,sc16is752_power_high);
+    mdelay(1);
+    pinctrl_select_state(sc16is752_pinctrl,sc16is752_rst_low);
+    mdelay(1);
+    pinctrl_select_state(sc16is752_pinctrl,sc16is752_rst_high);
+    return ret;
+}
+
 #ifdef CONFIG_SERIAL_SC16IS7XX_SPI
 static int sc16is7xx_spi_probe(struct spi_device *spi)
 {
@@ -1307,12 +1372,14 @@ static int sc16is7xx_spi_probe(struct spi_device *spi)
 	unsigned long flags = 0;
 	struct regmap *regmap;
 	int ret;
-
+    printk("sc16is7xx probe \n");
+    
+    ret = sc16is752_gpio_init(spi);
 	/* Setup SPI bus */
 	spi->bits_per_word	= 8;
 	/* only supports mode 0 on SC16IS762 */
-	spi->mode		= spi->mode ? : SPI_MODE_0;
-	spi->max_speed_hz	= spi->max_speed_hz ? : 15000000;
+	spi->mode		= SPI_MODE_0;
+	spi->max_speed_hz	= 4000000;
 	ret = spi_setup(spi);
 	if (ret)
 		return ret;
@@ -1335,7 +1402,7 @@ static int sc16is7xx_spi_probe(struct spi_device *spi)
 	regcfg.max_register = (0xf << SC16IS7XX_REG_SHIFT) |
 			      (devtype->nr_uart - 1);
 	regmap = devm_regmap_init_spi(spi, &regcfg);
-
+    printk("ret = %d ,spi_irq = %d \n",ret,spi->irq);
 	return sc16is7xx_probe(&spi->dev, devtype, regmap, spi->irq, flags);
 }
 
@@ -1430,7 +1497,7 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
 static int __init sc16is7xx_init(void)
 {
 	int ret;
-
+    printk("sc16is7xx_init\n");
 	ret = uart_register_driver(&sc16is7xx_uart);
 	if (ret) {
 		pr_err("Registering UART driver failed\n");
@@ -1446,6 +1513,7 @@ static int __init sc16is7xx_init(void)
 #endif
 
 #ifdef CONFIG_SERIAL_SC16IS7XX_SPI
+    printk("sc16is7xx_init spi\n");
 	ret = spi_register_driver(&sc16is7xx_spi_uart_driver);
 	if (ret < 0) {
 		pr_err("failed to init sc16is7xx spi --> %d\n", ret);
