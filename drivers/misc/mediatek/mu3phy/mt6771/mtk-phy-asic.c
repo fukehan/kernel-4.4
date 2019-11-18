@@ -38,10 +38,13 @@
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
 #include <linux/regulator/consumer.h>
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for pull up gpio 1 to enable 8152
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
 #endif
+#endif
+
 #include <mt-plat/mtk_chip.h>
 #include "mtk_devinfo.h"
 
@@ -52,8 +55,10 @@ static DEFINE_SPINLOCK(mu3phy_clock_lock);
 bool sib_mode;
 static struct regulator *reg_vusb;
 static struct regulator *reg_va09;
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for pull up gpio 1 to enable 8152
 unsigned int usb_switch_pin;
+#endif
 #endif
 
 enum VA09_OP {
@@ -1287,9 +1292,12 @@ void Charger_Detect_Release(void)
 static int mt_usb_dts_probe(struct platform_device *pdev)
 {
 	int retval = 0;
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for pull up gpio 1 to enable 8152
 	struct device_node *node;
 #endif
+#endif
+
 	/* POWER */
 	reg_vusb = regulator_get(&pdev->dev, "vusb");
 	if (!IS_ERR(reg_vusb)) {
@@ -1330,6 +1338,7 @@ static int mt_usb_dts_probe(struct platform_device *pdev)
 		else
 			pr_notice("sys_ck prepare fail\n");
 	}
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for pull up gpio 1 to enable 8152
 	node = of_find_compatible_node(NULL, NULL, "mediatek,usb3_phy");
 	if (node == NULL) {
@@ -1353,6 +1362,8 @@ static int mt_usb_dts_probe(struct platform_device *pdev)
 		}
 	}
 #endif
+#endif
+
 	usb20_phy_rev6 = 1;
 	pr_notice("%s, usb20_phy_rev6 to %d\n", __func__, usb20_phy_rev6);
 

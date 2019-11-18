@@ -16,9 +16,11 @@
 #include <linux/workqueue.h>
 #include <linux/usb/gadget.h>
 /*#include "mach/emi_mpu.h"*/
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for switch gpio 1
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
+#endif
 #endif
 
 #include "mu3d_hal_osal.h"
@@ -32,8 +34,10 @@
 #ifdef CONFIG_PHY_MTK_SSUSB
 #include "mtk-ssusb-hal.h"
 #endif
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)
 extern unsigned int usb_switch_pin;
+#endif
 #endif
 
 unsigned int cable_mode = CABLE_MODE_NORMAL;
@@ -133,10 +137,13 @@ void connection_work(struct work_struct *data)
 			vcore_op(1);
 #endif
 			musb_start(musb);
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for switch gpio 0
 			msleep(50);
 			gpio_set_value(usb_switch_pin, 0);
 #endif
+#endif
+
 			os_printk(K_INFO, "%s ----Connect----\n", __func__);
 		} else if ((is_usb_cable == false) && (connection_work_dev_status != OFF)) {
 
@@ -228,6 +235,7 @@ void mt_usb_disconnect(void)
 	os_printk(K_INFO, "%s\n", __func__);
 	issue_connection_work(CONNECTION_OPS_DISC);
 }
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)
 extern int mtk_xhci_driver_load(bool vbus_on);
 extern int xhci_init_flag;
@@ -235,10 +243,12 @@ static int cable_in = 0;
 int is_xhci_load=0;
 int first_boot_with_usb = 0;
 #endif
+#endif
 void mt_usb_reconnect(void)
 {
 	os_printk(K_INFO, "%s\n", __func__);
 	issue_connection_work(CONNECTION_OPS_CHECK);
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)
 	if((xhci_init_flag==1)&&(cable_in == 0))//add cable_in for can't enter meta mode
 	{
@@ -253,6 +263,7 @@ void mt_usb_reconnect(void)
 		if(cable_in == 1)
 			first_boot_with_usb = 1;
 	}
+#endif
 #endif
 }
 
@@ -463,12 +474,14 @@ static bool __usb_cable_connected(int ops)
 
 		/* VBUS CHECK to avoid type miss-judge */
 		vbus_exist = mu3d_hal_is_vbus_exist();
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for switch gpio 1
 		//gpio_set_value(usb_switch_pin, vbus_exist==0);
 		if(vbus_exist==1)
 			cable_in = 1;
 		else
 			cable_in = 0;
+#endif
 #endif
 		os_printk(K_INFO, "%s vbus_exist=%d type=%d ops=%d\n",
 				__func__, vbus_exist, chg_type, ops);

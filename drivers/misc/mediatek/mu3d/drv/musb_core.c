@@ -99,9 +99,11 @@
 #include <linux/uaccess.h>
 #include <linux/seq_file.h>
 #endif
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for switch gpio 1
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
+#endif
 #endif
 
 #include <mt-plat/mtk_chip.h>
@@ -2035,12 +2037,16 @@ static void musb_restore_context(struct musb *musb)
 #endif
 }
 
+
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)
 extern int is_xhci_load;
 extern void mtk_xhci_driver_unload(bool vbus_off);
 extern unsigned int usb_switch_pin;
 extern int first_boot_with_usb;
 #endif
+#endif
+
 static void musb_suspend_work(struct work_struct *data)
 {
 	struct musb *musb = container_of(data, struct musb, suspend_work);
@@ -2052,6 +2058,7 @@ static void musb_suspend_work(struct work_struct *data)
 	    && !usb_cable_connected()) {
 		musb_power_down(musb);
 	}
+#if !defined(DROI_PRO_WM80_ASU)
 #if defined(DROI_PRO_WM80) || defined(DROI_PRO_EM80)//wuxiwen add for reconnect for hub
 	if(is_xhci_load==1)
 	{
@@ -2066,6 +2073,7 @@ static void musb_suspend_work(struct work_struct *data)
 		//msleep(50);
 		//gpio_set_value(usb_switch_pin, 1);
 	}
+#endif
 #endif
 }
 
