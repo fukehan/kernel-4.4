@@ -28,7 +28,7 @@
 			int_wdt = <0>; /* 0: disable, 1: 250ms, 2: 500ms, 3: 1s */
 			int_deg = <0>; /* interrupt deglitch, 0: 1ms, 1: 2ms, 2: 5ms, 3: 10ms */
 		};
-		charger {
+		mt6370_charger: charger {
 			compatible = "mediatek,mt6370_pmu_charger";
 			interrupt-names = "chg_mivr", "chg_aiclmeasi", "attachi",
 				"ovpctrl_uvp_d_evt", "chg_wdtmri", "chg_vbusov",

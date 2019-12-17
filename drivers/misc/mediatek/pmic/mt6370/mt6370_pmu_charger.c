@@ -1935,6 +1935,11 @@ static int mt6370_set_otg_current_limit(struct charger_device *chg_dev, u32 uA)
 	return ret;
 }
 
+#if defined(DROI_PRO_WM80_ASU)
+static struct pinctrl *droi_5v_vbus_pinctrl;
+static struct pinctrl_state *droi_5v_vbus_low;
+static struct pinctrl_state *droi_5v_vbus_high;
+#endif
 static int mt6370_enable_otg(struct charger_device *chg_dev, bool en)
 {
 	int ret = 0;
@@ -1947,6 +1952,15 @@ static int mt6370_enable_otg(struct charger_device *chg_dev, bool en)
 	dev_info(chg_data->dev, "%s: en = %d\n", __func__, en);
 
 	mt6370_enable_hidden_mode(chg_data, true);
+
+#if defined(DROI_PRO_WM80_ASU)
+	if (en) {
+	    pinctrl_select_state(droi_5v_vbus_pinctrl, droi_5v_vbus_high);
+	} else {
+	    pinctrl_select_state(droi_5v_vbus_pinctrl, droi_5v_vbus_low);
+	}
+	goto out;
+#endif
 
 	/* Set OTG_OC to 500mA */
 	ret = mt6370_set_otg_current_limit(chg_dev, 500000);
@@ -3841,6 +3855,26 @@ static int mt6370_pmu_charger_probe(struct platform_device *pdev)
 		if (ret < 0)
 			dev_err(chg_data->dev, "%s: parse dts failed\n",
 				__func__);
+
+#if defined(DROI_PRO_WM80_ASU)
+		droi_5v_vbus_pinctrl = devm_pinctrl_get(&pdev->dev);
+		if (IS_ERR(droi_5v_vbus_pinctrl)) {
+		    ret = PTR_ERR(droi_5v_vbus_pinctrl);
+		    printk("droi_5v_vbus_pinctrl cannot find pinctrl\n");
+		}
+
+		droi_5v_vbus_low = pinctrl_lookup_state(droi_5v_vbus_pinctrl, "droi_5v_vbus_low");
+		if (IS_ERR(droi_5v_vbus_low)) {
+		    ret = PTR_ERR(droi_5v_vbus_low);
+		    printk("droi_5v_vbus_low cannot find pinctrl\n");
+		}
+
+		droi_5v_vbus_high = pinctrl_lookup_state(droi_5v_vbus_pinctrl, "droi_5v_vbus_high");
+		if (IS_ERR(droi_5v_vbus_high)) {
+		    ret = PTR_ERR(droi_5v_vbus_high);
+		    printk("droi_5v_vbus_high cannot find pinctrl\n");
+		}
+#endif
 	}
 	platform_set_drvdata(pdev, chg_data);
 

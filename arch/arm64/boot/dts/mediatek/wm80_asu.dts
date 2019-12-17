@@ -1078,6 +1078,29 @@
 	};
 };
 
+&pio {
+	droi_5v_vbus_low: droi_5v_vbus_low {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO47__FUNC_GPIO47>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	droi_5v_vbus_high: droi_5v_vbus_high {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO47__FUNC_GPIO47>;
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+};
+
+&mt6370_charger {
+	pinctrl-names = "droi_5v_vbus_low", "droi_5v_vbus_high";
+	pinctrl-0 = <&droi_5v_vbus_low>;
+	pinctrl-1 = <&droi_5v_vbus_high>;
+};
+
 #include <wm80_asu/cust.dtsi>
 /*End of this file, DO NOT ADD ANYTHING HERE*/
 
